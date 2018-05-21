@@ -34,3 +34,5 @@
 		} );
 	} );
 } )( jQuery );
+
+console.log('test');
