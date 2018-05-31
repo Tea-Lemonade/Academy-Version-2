@@ -184,10 +184,10 @@ function createDateRangeArray($strDateFrom,$strDateTo)
 <div id="page" class="hfeed site">
 	<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'academies_v1' ); ?></a>
 	<div class="gdpr-popup">
-			This site uses cookies to store information on your computer. By using this site, you consent to the placement and use of these cookies. Read our <a href="/privacy-policy/">Privacy Policy</a> to learn more.  
-			<a href="#" class="accept">ACCEPT </a> 
-		</div>
-	 <?php if( have_rows('alert') ){
+            This site uses cookies to store information on your computer. By using this site, you consent to the placement and use of these cookies. Read our <a href="/privacy-policy/">Privacy Policy</a> to learn more.  
+            <a href="#" class="accept">ACCEPT </a> 
+        </div> 
+	<?php if( have_rows('alert') ){
       while ( have_rows('alert') ) : the_row();
   if( get_sub_field('alert_active')) {
     $banner = true;
