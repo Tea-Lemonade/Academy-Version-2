@@ -38,7 +38,7 @@ else:
     define('DB_HOST', $_ENV['DB_HOST'] . ':' . $_ENV['DB_PORT']);
 
     /** Database Charset to use in creating database tables. */
-    define('DB_CHARSET', 'utf8');
+    define('DB_CHARSET', 'utf8mb4');
 
     /** The Database Collate type. Don't change this if in doubt. */
     define('DB_COLLATE', '');
@@ -51,7 +51,7 @@ else:
      * You can change these at any point in time to invalidate all existing cookies. This will force all users to have to log in again.
      *
      * Pantheon sets these values for you also. If you want to shuffle them you
-     * must contact support: https://pantheon.io/docs/getting-support 
+     * must contact support: https://pantheon.io/docs/getting-support
      *
      * @since 2.6.0
      */
@@ -67,7 +67,7 @@ else:
 
     /** A couple extra tweaks to help things run well on Pantheon. **/
     if (isset($_SERVER['HTTP_HOST'])) {
-        // HTTP is still the default scheme for now. 
+        // HTTP is still the default scheme for now.
         $scheme = 'http';
         // If we have detected that the end use is HTTPS, make sure we pass that
         // through here, so <img> tags and the like don't generate mixed-mode
@@ -101,8 +101,8 @@ else:
     define('DB_USER',          'database_username');
     define('DB_PASSWORD',      'database_password');
     define('DB_HOST',          'database_host');
-    define('DB_CHARSET',       'utf8');
-    define('DB_COLLATE',       '');
+    define('DB_CHARSET', 'utf8mb4');
+    define('DB_COLLATE', '');
     define('AUTH_KEY',         'put your unique phrase here');
     define('SECURE_AUTH_KEY',  'put your unique phrase here');
     define('LOGGED_IN_KEY',    'put your unique phrase here');
@@ -132,7 +132,7 @@ $table_prefix = 'wp_';
  * de_DE.mo to wp-content/languages and set WPLANG to 'de_DE' to enable German
  * language support.
  */
-define('WPLANG', '');
+
 
 /**
  * For developers: WordPress debugging mode.
@@ -146,6 +146,31 @@ define('WPLANG', '');
  */
 if ( ! defined( 'WP_DEBUG' ) ) {
     define('WP_DEBUG', false);
+}
+
+if (isset($_ENV['PANTHEON_ENVIRONMENT']) && php_sapi_name() != 'cli') {
+  // Redirect to https://$primary_domain in the Live environment
+  if ($_ENV['PANTHEON_ENVIRONMENT'] === 'live') {
+    $primary_domain = 'blessedsacramentca.org';
+  }
+  else {
+    // Redirect to HTTPS on every Pantheon environment.
+    $primary_domain = $_SERVER['HTTP_HOST'];
+  }
+
+  if ($_SERVER['HTTP_HOST'] != $primary_domain
+      || !isset($_SERVER['HTTP_USER_AGENT_HTTPS'])
+      || $_SERVER['HTTP_USER_AGENT_HTTPS'] != 'ON' ) {
+
+    # Name transaction "redirect" in New Relic for improved reporting (optional)
+    if (extension_loaded('newrelic')) {
+      newrelic_name_transaction("redirect");
+    }
+
+    header('HTTP/1.0 301 Moved Permanently');
+    header('Location: https://'. $primary_domain . $_SERVER['REQUEST_URI']);
+    exit();
+  }
 }
 
 /* That's all, stop editing! Happy Pressing. */

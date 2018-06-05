@@ -1,0 +1,73 @@
+/*
+Theme Name: Academies_V2_child
+Theme URI: http://underscores.me/
+Author: Underscores.me
+Author URI: http://underscores.me/
+Description: Description
+Version: 1.3.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Template: academies_v2
+Tags:
+
+This theme, like WordPress, is licensed under the GPL.
+Use it to make something cool, have fun, and share what you've learned with others.
+
+Academies_V1 is based on Underscores http://underscores.me/, (C) 2012-2015 Automattic, Inc.
+Underscores is distributed under the terms of the GNU GPL v2 or later.
+
+Normalizing styles have been helped along thanks to the fine work of
+Nicolas Gallagher and Jonathan Neal http://necolas.github.com/normalize.css/
+*/
+
+.home-icon {background-image: url(/wp-content/themes/academies_v2/images/catholic-diocese-of-brooklyn.png);}
+.home-icon {background-size: contain;background-position: center;background-repeat: no-repeat;float: right;height: 72px;margin-top: 10px;max-width: 100%;position: relative;right: 0;width: 387px;}
+
+.unslider {height:417px; padding-left: 40px;}
+.fa-toggle-right:before, .fa-caret-square-o-right:before { content: "\f105" !important; }
+.fa-toggle-left:before, .fa-caret-square-o-left:before { content: "\f104" !important; }
+
+.unslider-arrow.next {
+    float: right;
+    margin-right: 30px;
+    color: #FFF;
+    width: 20px;
+    height: 39px;
+    display: block;
+    margin-top: -290px;
+}
+.unslider-arrow.prev {
+    float: left;
+    margin-left: 10px;
+    color: #FFF;
+    width: 20px;
+    height: 39px;
+    display: block;
+    margin-top: -290px;
+}
+.unslider-nav ol li {
+    display: inline-block;
+    width: 15px;
+    height: 10px;
+    margin: 0 4px;
+    background: transparent;
+    border-radius: 0;
+    overflow: hidden;
+    text-indent: -99999em;
+    border: 2px solid #fff;
+    cursor: pointer;
+}
+.unslider-nav ol li.unslider-active {
+    background: #d29b1a;
+  	border-color: #d29b1a;
+    cursor: default;
+}
+.unslider-nav { padding-right: 0; }
+.unslider-nav ol { text-align:Center; }
+.unslider-arrow {display:none !important; font-size:90px; font-weight:100; text-shadow: 1px 1px 1px #888; }
+.unslider:hover > .unslider-arrow { display:block !important; }
+
+@media screen and (max-width: 1200px) { .unslider {padding:0px; }}
+
+@media screen and (max-width: 481px) { .unslider { height: 215px; } .unslider-arrow.next, .unslider-arrow.prev { margin-top: -180px; } }
+button, input[type="button"], input[type="reset"], input[type="submit"] {background: #d29b1a;}
