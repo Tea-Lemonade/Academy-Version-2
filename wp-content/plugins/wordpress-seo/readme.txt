@@ -1,155 +1,198 @@
 === Yoast SEO ===
 Contributors: yoast, joostdevalk, tacoverdo, omarreiss, atimmer, jipmoors
-Donate link: https://yoast.com/
+Donate link: https://yoa.st/1up
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 Tags: SEO, XML sitemap, Google Search Console, Content analysis, Readability
-Requires at least: 4.6
-Tested up to: 4.8
-Stable tag: 4.9
+Requires at least: 4.8
+Tested up to: 4.9.7
+Stable tag: 7.8
+Requires PHP: 5.2.4
 
 Improve your WordPress SEO: Write better content and have a fully optimized WordPress site using the Yoast SEO plugin.
 
 == Description ==
 
-WordPress out of the box is already technically quite a good platform for SEO. This was true when Joost wrote his original [WordPress SEO](https://yoast.com/articles/wordpress-seo/) article in 2008 (updated every few months) and it's still true today, but that doesn't mean you can't improve it further! This plugin is written from the ground up by Joost de Valk and his team at [Yoast](https://yoast.com/) to improve your site's SEO on *all* needed aspects. While this [Yoast SEO plugin](https://yoast.com/wordpress/plugins/seo/) goes the extra mile to take care of all the technical optimization, more on that below, it first and foremost helps you write better content.  Yoast SEO forces you to choose a focus keyword when you're writing your articles, and then makes sure you use that focus keyword everywhere.
+### Yoast SEO: the #1 WordPress SEO plugin
 
-> <strong>Premium Support</strong><br>
-> The Yoast team does not always provide active support for the Yoast SEO plugin on the WordPress.org forums. One-on-one email support is available to people who bought the [Premium Yoast SEO plugin](https://yoast.com/wordpress/plugins/seo-premium/) only.
-> Note that the Premium SEO plugin has several extra features too, including the option to have multiple focus keywords and a redirect manager, so it might be well worth your investment!
->
-> You should also check out the [Yoast Local SEO](https://yoast.com/wordpress/plugins/local-seo/), [Yoast News SEO](https://yoast.com/wordpress/plugins/news-seo/) and [Yoast Video SEO](https://yoast.com/wordpress/plugins/video-seo/) extensions to Yoast SEO. These of course come with support too.
+Need some help with your search engine optimization? Need an SEO plugin that helps you reach for the stars? Yoast SEO is the original WordPress SEO plugin since 2008. It is the favorite tool of millions of users, ranging from the bakery around the corner to some of the most popular sites on the planet. With Yoast SEO, you get a solid toolset that helps you aim for that number one spot in the search results. Yoast: SEO for everyone.
 
-> <strong>Bug Reports</strong><br>
-> Bug reports for Yoast SEO are [welcomed on GitHub](https://github.com/Yoast/wordpress-seo). Please note GitHub is _not_ a support forum, and issues that aren't properly qualified as bugs will be closed.
+Yoast SEO does everything in its power to please both visitors and search engine spiders. How? Below you’ll find a small sampling of the powers of Yoast SEO:
 
-= Write better content with Yoast SEO =
-Using the snippet preview, you can see a rendering of what your post or page will look like in the search results, whether your title is too long or too short, and whether your meta description makes sense in the context of a search result. This way the plugin will help you not only increase rankings but also increase the click through rate for organic search results.
+#### Taking care of your WordPress SEO
 
-= Page Analysis =
-The Yoast SEO plugins [Page Analysis](https://yoast.com/content-seo-wordpress-linkdex/) functionality checks simple things you're bound to forget. It checks, for instance, if you have images in your post and whether they have an alt tag containing the focus keyword for that post. It also checks whether your posts are long enough, whether you've written a meta description and if that meta description contains your focus keyword, if you've used any subheadings within your post, etc. etc.
+* The most advanced XML Sitemaps functionality at the push of a button.
+* Full control over site breadcrumbs: add a piece of code and you’re good to go.
+* Set canonical URLs to avoid duplicate content. Never have to worry about Google penalties again.
+* Title and meta description templating for better branding and consistent snippets in the search results.
+* **[Premium]** Expand Yoast SEO with the News SEO, Video SEO, Local SEO and WooCommerce SEO extensions.
+* **[Premium]** Need help? Yoast SEO Premium users get 1 year free access to our awesome support team.
 
-The plugin alsgruo allows you to write meta titles and descriptions for all your category, tag and custom taxonomy archives, giving you the option to further optimize those pages.
+> Note: some features are Premium. Which means you need Yoast SEO Premium to unlock those features. You can [get Yoast SEO Premium here](https://yoa.st/1v8)!
 
-Combined, this plugin makes sure that your content is the type of content search engines will love!
+#### Write killer content with Yoast SEO
 
-= Technical WordPress Search Engine Optimization =
-While out of the box WordPress is pretty good for SEO, it needs some tweaks here and there. This Yoast SEO plugin guides you through some of the settings needed, for instance by reminding you to enable pretty permalinks. But it also goes beyond that, by automatically optimizing and inserting the meta tags and link elements that Google and other search engines like so much:
+* Content & SEO analysis: Invaluable tools to write SEO-friendly texts.
+* The snippet preview shows you how your post or page will look in the search results - even on mobile. Yoast SEO Premium even has social media previews!
+* **[Premium]** The Insights tool shows you what your text focuses on so you can keep your article in line with your keywords.
+* **[Premium]** Multiple focus keywords: Optimize your article for synonyms and related keywords.
+* **[Premium]** Automatic internal linking suggestions: write your article and get automatic suggested posts to link to.
 
-= Meta & Link Elements =
-With the Yoast SEO plugin you can control which pages Google shows in its search results and which pages it doesn't show. By default, it will tell search engines to index all of your pages, including category and tag archives, but to only show the first pages in the search results. It's not very useful for a user to end up on the third page of your "personal" category, right?
+#### Keep your site in perfect shape
 
-WordPress itself only shows canonical link elements on single pages, but Yoast SEO makes it output canonical link elements everywhere. Google has recently announced they would also use `rel="next"` and `rel="prev"` link elements in the `head` section of your paginated archives. This plugin adds those automatically. See [this post](https://yoast.com/rel-next-prev-paginated-archives/) for more info.
+* Yoast SEO tunes the engine of your site so you can work on creating great content.
+* Our cornerstone content and internal linking features help you optimize your site structure in a breeze.
+* Integrates with Google Search Console: See how your site performs in the search engines and fix crawl errors.
+* Manage SEO roles: Give your colleagues access to specific sections of the Yoast SEO plugin.
+* Bulk editor: Make large-scale edits to your site.
+* **[Premium]** Social previews to manage the way your page is shared on social networks like Facebook and Twitter.
+* **[Premium]** Redirect manager: It keeps your site healthy by easily redirecting errors from Google Search Console, deleted pages and changed URLs.
 
-= XML Sitemaps =
-The Yoast SEO plugin has the most advanced XML Sitemaps functionality in any WordPress plugin. Once you check the box, it automatically creates XML sitemaps and notifies Google & Bing of the sitemaps' existence. These XML sitemaps include the images in your posts & pages too, so that your images may be found better in the search engines too.
+### Premium support
 
-These XML Sitemaps will even work on large sites, because of how they're created, using one index sitemap that links to sub-sitemaps for each 1,000 posts. They will also work with custom post types and custom taxonomies automatically, while giving you the option to remove those from the XML sitemap should you wish to.
+The Yoast team does not always provide active support for the Yoast SEO plugin on the WordPress.org forums, as we prioritize our email support. One-on-one email support is available to people who [bought Yoast SEO Premium](https://yoa.st/1v8) only.
 
-Because of using [XSL stylesheets for these XML Sitemaps](https://yoast.com/xsl-stylesheet-xml-sitemap/), the XML sitemaps are easily readable for the human eye too, so you can spot things that shouldn't be in there.
+Note that the [Yoast SEO Premium](https://yoa.st/1v8) also has several extra features too, including the option to have multiple focus keywords, internal linking suggestions, cornerstone content checks and a redirect manager, so it is well worth your investment!
 
-= RSS Optimization =
-Are you being outranked by scrapers? Instead of cursing at them, use them to your advantage! By automatically adding a link to your RSS feed pointing back to the original article, you're telling the search engine where they should be looking for the original. This way, the Yoast SEO plugin increases your own chance of ranking for your chosen keywords and gets rid of scrapers in one go!
+You should also check out the [Yoast Local SEO](https://yoa.st/1uu), [Yoast News SEO](https://yoa.st/1uv) and [Yoast Video SEO](https://yoa.st/1uw) extensions to Yoast SEO. They work with the free version of Yoast SEO already, and these premium extensions of course come with support too.
 
-= Breadcrumbs =
-If your theme is compatible, and themes based on for instance Genesis or by WooThemes often are, you can use the built-in Breadcrumbs functionality. This allows you to create an easy navigation that is great for both users and search engines, and will support the search engines in understanding the structure of your site.
+### Bug reports
 
-Making your theme compatible isn't hard either, check [these instructions](https://kb.yoast.com/kb/implement-wordpress-seo-breadcrumbs/).
+Bug reports for Yoast SEO are [welcomed on GitHub](https://github.com/Yoast/wordpress-seo). Please note GitHub is not a support forum, and issues that aren’t properly qualified as bugs will be closed.
 
-= Edit your .htaccess and robots.txt file =
-Using the built-in file editor, you can edit your WordPress blog's `.htaccess` and `robots.txt` file, giving you direct access to the two most powerful files, from an SEO perspective, in your WordPress install.
+### Further Reading
 
-= Social Integration =
-SEO and Social Media are heavily intertwined. That's why this plugin also comes with a Facebook OpenGraph implementation and will soon also support Google+ sharing tags.
+For more info on search engine optimization, check out the following:
 
-= Multi-Site Compatible =
-The Yoast SEO plugin, unlike some others, is fully Multi-Site compatible. The XML Sitemaps work fine in all setups and you even have the option, in the Network settings, to copy the settings from one blog to another, or make blogs default to the settings for a specific blog.
-
-= Import & Export functionality =
-If you have multiple blogs, setting up plugins like this one on all of them might seem like a daunting task. Except that it's not, because what you can do is simple: you set up the plugin once. You then export your settings and simply import them on all your other sites. It's that simple!
-
-= Import functionality for other WordPress SEO plugins =
-If you've used All In One SEO Pack or HeadSpace2 before using this plugin, you might want to import all your old titles and descriptions. You can do that easily using the built-in import functionality. There's also import functionality for some of the older Yoast plugins, like Robots Meta and RSS footer.
-
-Should you have a need to import from another SEO plugin to Yoast SEO, or from a theme like Genesis or Thesis, you can use the [SEO Data Transporter](http://wordpress.org/extend/plugins/seo-data-transporter/) plugin, which will easily convert your SEO meta data from and to a whole set of plugins like Platinum SEO, SEO Ultimate, Greg's High Performance SEO, and themes like Headway, Hybrid, WooFramework, Catalyst etc.
-
-Read [this migration guide](https://yoast.com/all-in-one-seo-pack-migration/) if you still have questions about migrating from another SEO plugin to Yoast SEO.
-
-= Yoast SEO Plugin in your Language! =
-Currently a huge translation project is underway, translating Yoast SEO in as much as 24 languages. So far, the translations for French and Dutch are complete, but we still need help on a lot of other languages, so if you're good at translating, please join us at [translate.yoast.com](http://translate.yoast.com).
-
-= News SEO =
-Be sure to also check out the premium [News SEO module](https://yoast.com/wordpress/plugins/news-seo/) if you need Google News Sitemaps. It tightly integrates with Yoast SEO to give you the combined power of News Sitemaps and full Search Engine Optimization.
-
-= Further Reading =
-For more info, check out the following articles:
-
-* The [Yoast SEO Knowledgebase](https://kb.yoast.com/kb/category/yoast-seo/).
-* [WordPress SEO - The definitive Guide by Yoast](https://yoast.com/articles/wordpress-seo/).
-* Once you have great SEO, you'll need the [best WordPress Hosting](https://yoast.com/articles/wordpress-hosting/).
-* The [Yoast SEO Plugin](https://yoast.com/wordpress/plugins/seo/) official homepage.
-* Other [WordPress Plugins](https://yoast.com/wordpress/plugins/) by the same team.
-* Follow Yoast on [Facebook](https://facebook.com/yoast) & [Twitter](http://twitter.com/yoast).
+* The [Yoast SEO Plugin](https://yoa.st/1v8) official homepage.
+* The [Yoast SEO Knowledgebase](https://yoa.st/1va).
+* [WordPress SEO - The definitive Guide by Yoast](https://yoa.st/1v6).
+* Other [WordPress Plugins](https://yoa.st/1v9) by the same team.
+* Follow Yoast on [Facebook](https://facebook.com/yoast) & [Twitter](https://twitter.com/yoast).
 
 == Installation ==
 
 === From within WordPress ===
+
 1. Visit 'Plugins > Add New'
 1. Search for 'Yoast SEO'
 1. Activate Yoast SEO from your Plugins page.
 1. Go to "after activation" below.
 
 === Manually ===
+
 1. Upload the `wordpress-seo` folder to the `/wp-content/plugins/` directory
 1. Activate the Yoast SEO plugin through the 'Plugins' menu in WordPress
 1. Go to "after activation" below.
 
 === After activation ===
+
 1. You should see (a notice to start) the Yoast SEO configuration wizard.
 1. Go through the configuration wizard and set up the plugin for your site.
 1. You're done!
 
 == Frequently Asked Questions ==
 
-You'll find answers to many of your questions on [kb.yoast.com](https://kb.yoast.com/kb/category/yoast-seo/).
+You'll find answers to many of your questions on [kb.yoast.com](https://yoa.st/1va).
 
 == Screenshots ==
 
 1. The Yoast SEO plugin general meta box. You'll see this on edit post pages, for posts, pages and custom post types.
-2. The fully configurable XML sitemap for Yoast SEO.
-3. Easily import SEO data from other SEO plugins like All In One SEO pack, HeadSpace2 SEO and wpSEO.de.
-4. Example of the SEO analysis functionality.
-5. Example of the readability analysis functionality.
-6. The advanced section of the Yoast SEO meta box.
+2. Example of the SEO analysis functionality.
+3. Example of the readability analysis functionality.
+4. Overview of site-wide SEO problems and possible improvements.
+5. Control over which features you want to use.
+6. Easily import SEO data from other SEO plugins like All In One SEO pack, HeadSpace2 SEO and wpSEO.de.
 
 == Changelog ==
 
-= 4.9.0 =
+= 7.8.0 =
+Release Date: July 10th, 2018
 
-Release Date: June 7th, 2017
+Enhancements:
+* Improves the way that the OpenGraph is determined for front pages, especially in the case of static front pages.
+* Adds links to relevant articles to all SEO assessments.
+* Adds Flesch Reading Ease assessment for French.
+* Adds Flesch Reading Ease assessment for Spanish.
+* Adds passive voice assessment for Italian.
 
-* Bugfixes
-	* Fixes a bug where there were certain assessments missing when switching to cornerstone content.
-	* Fixes a bug where the configuration wizard button was visible for users who didn't have enough rights to access the configuration wizard.
-	* Fixes a bug where the column `ID` was ambiguous, causing an SQL error.
-	* Fixes a bug where the category URL in the sitemap was encoded twice.
-	* Fixes a bug where an old upgrade notice is not removed.
+Bugfixes:
+* Fixes a bug where images from password protected posts could potentially end up in OpenGraph image tags.
+* Fixes a bug where very old notifications could not be be dismissed or restored.
+* Fixes a bug where the `Insert snippet variable` button alignment was incorrect.
+* Fixes a bug where the snippet variables had a different label in the Search Appearance settings compared to the snippet variables when writing a post, pages and taxonomies.
+* Fixes a bug where instances of the same keyword with different kinds of apostrophes (e.g., brain’s and brain's) were not recognized as the same. This affects the following assessments: keyword in meta description, keyword in subheading, keyword in first paragraph, keyword in title and keyword in URL.
+* Fixes a bug where the custom set breadcrumb title for the WooCommerce Shop page wasn't used.
 
-* Enhancements
-	* Removes the noodp advanced robots meta value as it is no longer used.
-	* Loads the translations only when the configuration wizard endpoint is called, instead of every time `rest_api_init` is called.
+Other:
+* Adds a reminder message to create a redirect if a user deletes a category or tag.
+* Removes a banner spot in the admin.
 
-= 4.8.0 =
+= 7.7.3 =
+Release Date: July 2nd, 2018
 
-Release Date: May 23rd, 2017
+Bugfixes:
+* Disables WordPress' automatic conversion of emoji to images on every page where the snippet editor is present. This conversion is not compatible with React or content editable fields and broke the snippet editor.
+* Fixes text directionality for the title and description fields in the snippet editor for right-to-left languages.
+* Fixes a bug where the snippet title and description values were saved to the database if they did match the post-type template.
 
-* Bugfixes
-	* Fixes a bug where the tabs in the social and advanced metabox section are gone when keyword analysis has been disabled.
+= 7.7.2 =
+Release Date: June 29th, 2018
 
-* Enhancements
-	* Optimizes the way the cornerstone flag is saved.
-	* Analyzes the content using cornerstone assessors when a post or page is cornerstone content.
+Bugfixes:
+* Fixes a bug where the snippet variables selection is hidden behind the WordPress menu when using a right-to-left language.
+* Fixes styling in the snippet preview when using a right-to-left language.
+* Fixes a bug where the 'insert snippet variable' button placement was inconsistent.
+* Migrates WooCommerce Product archive settings to the Shop page, if present and not already set on the Shop page.
+
+= 7.7.1 =
+Release Date: June 27th, 2018
+
+Bugfixes:
+* Fixes a bug where disabling the `post_format` archive would result in it actually being enabled and vice versa.
+* Fixes an issue where all replacement variables were being displayed instead of the recommended ones.
+
+Other:
+* Restores `currentyear` as a snippet variable.
+
+= 7.7.0 =
+Release Date: June 26th, 2018
+
+Enhancements:
+* Implements the snippet preview in React. This brings an improved user experience regarding the snippet variables, making it easier to use and discover them.
+* Implements the improved snippet variables on the search appearance settings pages.
+* Adds an inserter to the title and metadescription fields to make it easier to insert a snippet variable.
+* Improves the mobile snippet preview to match the Google mobile search results more closely.
+* Changes the behavior of the meta description preview when there is no handwritten meta description. We no longer mimic Google by showing a part of your content, but explain what Google does instead.
+* Sends the user to the proper control in the customizer when clicking the link in the "You still have the default WordPress tagline [...]" warning message.
+* Adds a `wpseo_attachment_redirect_url` filter to allow changing of the target redirection URL for attachments. This may be necessary to restore the redirect to the parent post. Props to [cawa-93](https://github.com/cawa-93).
+* Adds recommended snippet variables for templates depending on the context.
+* Adds a `wpseo_recommended_replace_vars` filter to allow adding or altering the recommended snippet variables.
+* Adds support for JSON-LD breadcrumbs. Props to [teolaz](https://github.com/teolaz)
+* Improves the lists of French transition words, stopwords, and function words, props to [Laurent-1971](https://github.com/Laurent-1971).
+* Improves the assessment that checks the use of subheadings so that it always returns relevant feedback to the user.
+* Adds a notification when a post is removed.
+* Overhauls the Content Types section under SEO -> Search Appearance by sectioning the post types and allowing users to collapse them. This is especially handy when you have a lot of custom post types.
+* Updates the 'snippet variables tab' of the Help Center to have the new names.
+
+Bugfixes:
+* Fixes a bug where a PHP notice would be triggered when the `opcache.restrict_api` directive was enabled.
+* Fixes a bug where restricting SEO setting access to network admins only on a multisite, would still allow regular admins to have access to SEO settings.
+* Fixes a bug where dismissing notifications on a single site in a multisite environment, would result in the notification being dismissed on all sites.
+* Fixes a bug where the attachment URL would redirect to `wp-admin` if the attachment was located on a different Site URL domain.
+* Fixes a bug where MySQL would throw a "Duplicate entry 'X'" error into the error log when attempting to upsert a record in the database.
+* Fixes a performance problem where the selecting a fallback Open Graph image would collect the filename for all the images in the content. This has been changed to detecting if an image is usable per image and stopping when a usable image is found.
+* Fixes a bug where the term title snippet variable would be replaced by 'undefined' instead of an empty string on posts and pages.
+* Fixes a bug where PHP notices got triggered on archive pages when `%%pt_single%%` and/or `%%pt_plural%%` are used in a template.
+* Fixes a bug where the configured separator wasn't used in the title template fallback that's being used when no title template has been set.
+
+Deprecated:
+* Deprecates the following snippet variables: %%userid%%, %%currenttime%%, %%currentdate%%, %%currentday%%, %%currentmonth%%, %%currentyear%%.
+
+Other:
+* Changes the timing on which the capability filter is run to better time when notifications should be initialized.
+* Adds X-Redirect-By header to all redirects, making the origin of redirects much easier to debug.
 
 = Earlier versions =
 
-For the changelog of earlier versions, please refer to the separate changelog.txt file.
+For the changelog of earlier versions, please refer to https://yoa.st/yoast-seo-changelog

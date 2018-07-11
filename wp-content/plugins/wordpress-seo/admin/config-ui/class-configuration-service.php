@@ -1,5 +1,7 @@
 <?php
 /**
+ * WPSEO plugin file.
+ *
  * @package WPSEO\Admin\ConfigurationUI
  */
 
@@ -134,8 +136,8 @@ class WPSEO_Configuration_Service {
 	 */
 	public function get_configuration() {
 		$this->populate_configuration();
-		$fields = $this->storage->retrieve();
-		$steps  = $this->structure->retrieve();
+		$fields       = $this->storage->retrieve();
+		$steps        = $this->structure->retrieve();
 		$translations = $this->translations->retrieve();
 
 		return array(

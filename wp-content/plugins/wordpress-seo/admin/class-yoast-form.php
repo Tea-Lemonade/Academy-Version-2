@@ -1,5 +1,7 @@
 <?php
 /**
+ * WPSEO plugin file.
+ *
  * @package WPSEO\Admin
  */
 
@@ -58,7 +60,7 @@ class Yoast_Form {
 			$option_long_name = WPSEO_Options::get_group_name( $option );
 		}
 		?>
-		<div class="wrap yoast wpseo-admin-page page-<?php echo $option; ?>">
+		<div class="wrap yoast wpseo-admin-page <?php echo esc_attr( 'page-' . $option ); ?>">
 		<?php
 		/**
 		 * Display the updated/error messages
@@ -66,7 +68,7 @@ class Yoast_Form {
 		 *
 		 * @see settings_errors()
 		 */
-		require_once( ABSPATH . 'wp-admin/options-head.php' );
+		require_once ABSPATH . 'wp-admin/options-head.php';
 		?>
 		<h1 id="wpseo-title"><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<div class="wpseo_content_wrapper">
@@ -93,6 +95,21 @@ class Yoast_Form {
 	}
 
 	/**
+	 * Sets a value in the options.
+	 *
+	 * @since 5.4
+	 *
+	 * @param string $key       The key of the option to set.
+	 * @param mixed  $value     The value to set the option to.
+	 * @param bool   $overwrite Whether to overwrite existing options. Default is false.
+	 */
+	public function set_options_value( $key, $value, $overwrite = false ) {
+		if ( $overwrite || ! array_key_exists( $key, $this->options ) ) {
+			$this->options[ $key ] = $value;
+		}
+	}
+
+	/**
 	 * Retrieve options based on whether we're on multisite or not.
 	 *
 	 * @since 1.2.4
@@ -100,7 +117,7 @@ class Yoast_Form {
 	 *
 	 * @return array
 	 */
-	private function get_option() {
+	public function get_option() {
 		if ( is_network_admin() ) {
 			return get_site_option( $this->option_name );
 		}
@@ -127,7 +144,7 @@ class Yoast_Form {
 		/**
 		 * Apply general admin_footer hooks
 		 */
-		do_action( 'wpseo_admin_footer' );
+		do_action( 'wpseo_admin_footer', $this );
 
 		/**
 		 * Run possibly set actions to add for example an i18n box
@@ -143,24 +160,7 @@ class Yoast_Form {
 
 		echo '</div><!-- end of div wpseo_content_wrapper -->';
 
-
-		if ( ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) ) {
-			$xdebug = ( extension_loaded( 'xdebug' ) ? true : false );
-			echo '
-			<div id="poststuff">
-			<div id="wpseo-debug-info" class="postbox">
-
-				<h2 class="hndle"><span>' . __( 'Debug Information', 'wordpress-seo' ) . '</span></h2>
-				<div class="inside">
-					<h3 class="wpseo-debug-heading">' . esc_html( __( 'Current option:', 'wordpress-seo' ) ) . ' <span class="wpseo-debug">' . esc_html( $this->option_name ) . '</span></h3>
-					' . ( ( $xdebug ) ? '' : '<pre>' );
-			var_dump( $this->get_option() );
-			echo '
-					' . ( ( $xdebug ) ? '' : '</pre>' ) . '
-				</div>
-			</div>
-			</div>';
-		}
+		do_action( 'wpseo_admin_below_content', $this );
 
 		echo '
 			</div><!-- end of wrap -->';
@@ -175,22 +175,15 @@ class Yoast_Form {
 
 		// No banners in Premium.
 		if ( class_exists( 'WPSEO_Product_Premium' ) ) {
-			$license_manager = new Yoast_Plugin_License_Manager( new WPSEO_Product_Premium() );
-			if ( $license_manager->license_is_valid() ) {
+			$product_premium   = new WPSEO_Product_Premium();
+			$extension_manager = new WPSEO_Extension_Manager();
+
+			if ( $extension_manager->is_activated( $product_premium->get_slug() ) ) {
 				return;
 			}
 		}
 
-		$sidebar_renderer = new WPSEO_Admin_Banner_Sidebar_Renderer( new WPSEO_Admin_Banner_Spot_Renderer() );
-
-		$banner_renderer = new WPSEO_Admin_Banner_Renderer;
-		$banner_renderer->set_base_path( plugins_url( 'images/banner/', WPSEO_FILE ) );
-
-		$sidebar = new WPSEO_Admin_Banner_Sidebar( sprintf( '%1s recommendations for you', 'Yoast' ), $banner_renderer );
-		$sidebar->initialize( new WPSEO_Features() );
-
-		echo $sidebar_renderer->render( $sidebar );
-
+		require_once 'views/sidebar.php';
 	}
 
 	/**
@@ -208,7 +201,7 @@ class Yoast_Form {
 				'for'   => '',
 			)
 		);
-		echo "<label class='" . $attr['class'] . "' for='" . esc_attr( $attr['for'] ) . "'>$text";
+		echo "<label class='" . esc_attr( $attr['class'] ) . "' for='" . esc_attr( $attr['for'] ) . "'>$text";
 		if ( $attr['close'] ) {
 			echo '</label>';
 		}
@@ -224,12 +217,13 @@ class Yoast_Form {
 	 */
 	public function legend( $text, $attr ) {
 		$attr = wp_parse_args( $attr, array(
-				'id' => '',
+				'id'    => '',
 				'class' => '',
 			)
 		);
+
 		$id = ( '' === $attr['id'] ) ? '' : ' id="' . esc_attr( $attr['id'] ) . '"';
-		echo '<legend class="yoast-form-legend ' . $attr['class'] . '"' . $id . '>' . $text . '</legend>';
+		echo '<legend class="yoast-form-legend ' . esc_attr( $attr['class'] ) . '"' . $id . '>' . $text . '</legend>';
 	}
 
 	/**
@@ -271,16 +265,17 @@ class Yoast_Form {
 	}
 
 	/**
-	 * Create a light switch input field.
+	 * Create a light switch input field using a single checkbox.
 	 *
 	 * @since 3.1
 	 *
 	 * @param string  $var        The variable within the option to create the checkbox for.
-	 * @param string  $label      The label to show for the variable.
-	 * @param array   $buttons    Array of two labels for the buttons (defaults Off/On).
+	 * @param string  $label      The label element text for the checkbox.
+	 * @param array   $buttons    Array of two visual labels for the buttons (defaults Disabled/Enabled).
 	 * @param boolean $reverse    Reverse order of buttons (default true).
+	 * @param string  $help       Inline Help that will be printed out before the visible toggles text.
 	 */
-	public function light_switch( $var, $label, $buttons = array(), $reverse = true ) {
+	public function light_switch( $var, $label, $buttons = array(), $reverse = true, $help = '' ) {
 
 		if ( ! isset( $this->options[ $var ] ) ) {
 			$this->options[ $var ] = false;
@@ -290,7 +285,7 @@ class Yoast_Form {
 			$this->options[ $var ] = 'on';
 		}
 
-		$class = 'switch-light switch-candy switch-yoast-seo';
+		$class           = 'switch-light switch-candy switch-yoast-seo';
 		$aria_labelledby = esc_attr( $var ) . '-label';
 
 		if ( $reverse ) {
@@ -303,10 +298,16 @@ class Yoast_Form {
 
 		list( $off_button, $on_button ) = $buttons;
 
-		echo '<div class="switch-container">',
-		'<label class="', esc_attr( $class ), '"><b class="switch-yoast-seo-jaws-a11y">&nbsp;</b>',
+		$help_class               = '';
+		$screen_reader_text_class = '';
+
+		$help_class = ! empty( $help ) ? ' switch-container__has-help' : '';
+
+		echo "<div class='switch-container$help_class'>",
+		"<span class='switch-light-visual-label'>{$label}</span>" . $help,
+		'<label class="', $class, '"><b class="switch-yoast-seo-jaws-a11y">&nbsp;</b>',
 		'<input type="checkbox" aria-labelledby="', $aria_labelledby, '" id="', esc_attr( $var ), '" name="', esc_attr( $this->option_name ), '[', esc_attr( $var ), ']" value="on"', checked( $this->options[ $var ], 'on', false ), '/>',
-		"<b class='label-text' id='{$aria_labelledby}'>{$label}</b>",
+		"<b class='label-text screen-reader-text' id='{$aria_labelledby}'>{$label}</b>",
 		'<span aria-hidden="true">
 			<span>', esc_html( $off_button ) ,'</span>
 			<span>', esc_html( $on_button ) ,'</span>
@@ -337,7 +338,13 @@ class Yoast_Form {
 		) );
 		$val  = ( isset( $this->options[ $var ] ) ) ? $this->options[ $var ] : '';
 
-		$this->label( $label . ':', array( 'for' => $var, 'class' => 'textinput' ) );
+		$this->label(
+			$label . ':',
+			array(
+				'for'   => $var,
+				'class' => 'textinput',
+			)
+		);
 		echo '<input class="textinput ' . esc_attr( $attr['class'] ) . ' " placeholder="' . esc_attr( $attr['placeholder'] ) . '" type="text" id="', esc_attr( $var ), '" name="', esc_attr( $this->option_name ), '[', esc_attr( $var ), ']" value="', esc_attr( $val ), '"/>', '<br class="clear" />';
 	}
 
@@ -363,7 +370,13 @@ class Yoast_Form {
 		) );
 		$val  = ( isset( $this->options[ $var ] ) ) ? $this->options[ $var ] : '';
 
-		$this->label( $label . ':', array( 'for' => $var, 'class' => 'textinput' ) );
+		$this->label(
+			$label . ':',
+			array(
+				'for'   => $var,
+				'class' => 'textinput',
+			)
+		);
 		echo '<textarea cols="' . esc_attr( $attr['cols'] ) . '" rows="' . esc_attr( $attr['rows'] ) . '" class="textinput ' . esc_attr( $attr['class'] ) . '" id="' . esc_attr( $var ) . '" name="' . esc_attr( $this->option_name ) . '[' . esc_attr( $var ) . ']">' . esc_textarea( $val ) . '</textarea><br class="clear" />';
 	}
 
@@ -403,7 +416,13 @@ class Yoast_Form {
 			return;
 		}
 
-		$this->label( $label . ':', array( 'for' => $field_name, 'class' => 'select' ) );
+		$this->label(
+			$label . ':',
+			array(
+				'for'   => $field_name,
+				'class' => 'select',
+			)
+		);
 
 		$select_name   = esc_attr( $this->option_name ) . '[' . esc_attr( $field_name ) . ']';
 		$active_option = ( isset( $this->options[ $field_name ] ) ) ? $this->options[ $field_name ] : '';
@@ -430,7 +449,13 @@ class Yoast_Form {
 		}
 
 		$var_esc = esc_attr( $var );
-		$this->label( $label . ':', array( 'for' => $var, 'class' => 'select' ) );
+		$this->label(
+			$label . ':',
+			array(
+				'for'   => $var,
+				'class' => 'select',
+			)
+		);
 		echo '<input type="file" value="' . esc_attr( $val ) . '" class="textinput" name="' . esc_attr( $this->option_name ) . '[' . $var_esc . ']" id="' . $var_esc . '"/>';
 
 		// Need to save separate array items in hidden inputs, because empty file inputs type will be deleted by settings API.
@@ -458,7 +483,13 @@ class Yoast_Form {
 
 		$var_esc = esc_attr( $var );
 
-		$this->label( $label . ':', array( 'for' => 'wpseo_' . $var, 'class' => 'select' ) );
+		$this->label(
+			$label . ':',
+			array(
+				'for'   => 'wpseo_' . $var,
+				'class' => 'select',
+			)
+		);
 		echo '<input class="textinput" id="wpseo_', $var_esc, '" type="text" size="36" name="', esc_attr( $this->option_name ), '[', $var_esc, ']" value="', esc_attr( $val ), '" />';
 		echo '<input id="wpseo_', $var_esc, '_button" class="wpseo_image_upload_button button" type="button" value="', esc_attr__( 'Upload Image', 'wordpress-seo' ), '" />';
 		echo '<br class="clear"/>';
@@ -499,22 +530,31 @@ class Yoast_Form {
 		foreach ( $values as $key => $value ) {
 			$key_esc = esc_attr( $key );
 			echo '<input type="radio" class="radio" id="' . $var_esc . '-' . $key_esc . '" name="' . esc_attr( $this->option_name ) . '[' . $var_esc . ']" value="' . $key_esc . '" ' . checked( $this->options[ $var ], $key_esc, false ) . ' />';
-			$this->label( $value, array( 'for' => $var_esc . '-' . $key_esc, 'class' => 'radio' ) );
+			$this->label(
+				$value,
+				array(
+					'for'   => $var_esc . '-' . $key_esc,
+					'class' => 'radio',
+				)
+			);
 		}
 		echo '</fieldset>';
 	}
 
 
 	/**
-	 * Create a toggle switch input field.
+	 * Create a toggle switch input field using two radio buttons.
 	 *
 	 * @since 3.1
 	 *
-	 * @param string $var    The variable within the option to create the file upload field for.
-	 * @param array  $values The radio options to choose from.
-	 * @param string $label  The label to show for the variable.
+	 * @param string $var    The variable within the option to create the radio buttons for.
+	 * @param array  $values Associative array of on/off keys and their values to be used as
+	 *                       the label elements text for the radio buttons. Optionally, each
+	 *                       value can be an array of visible label text and screen reader text.
+	 * @param string $label  The visual label for the radio buttons group, used as the fieldset legend.
+	 * @param string $help   Inline Help that will be printed out before the visible toggles text.
 	 */
-	public function toggle_switch( $var, $values, $label ) {
+	public function toggle_switch( $var, $values, $label, $help = '' ) {
 		if ( ! is_array( $values ) || $values === array() ) {
 			return;
 		}
@@ -528,19 +568,79 @@ class Yoast_Form {
 			$this->options[ $var ] = 'off';
 		}
 
+		$help_class = ! empty( $help ) ? ' switch-container__has-help' : '';
+
 		$var_esc = esc_attr( $var );
 
-		echo '<div class="switch-container">';
-		echo '<fieldset id="', $var_esc, '" class="fieldset-switch-toggle"><legend>', $label, '</legend>
-		<div class="switch-toggle switch-candy switch-yoast-seo">';
+		printf( '<div class="%s">', esc_attr( 'switch-container' . $help_class ) );
+		echo '<fieldset id="', $var_esc, '" class="fieldset-switch-toggle"><legend>', $label, '</legend>', $help,
+		'<div class="switch-toggle switch-candy switch-yoast-seo">';
 
 		foreach ( $values as $key => $value ) {
+			$screen_reader_text      = '';
+			$screen_reader_text_html = '';
+
+			if ( is_array( $value ) ) {
+				$screen_reader_text      = $value['screen_reader_text'];
+				$screen_reader_text_html = '<span class="screen-reader-text"> ' . esc_html( $screen_reader_text ) . '</span>';
+				$value                   = $value['text'];
+			}
+
 			$key_esc = esc_attr( $key );
 			$for     = $var_esc . '-' . $key_esc;
 			echo '<input type="radio" id="' . $for . '" name="' . esc_attr( $this->option_name ) . '[' . $var_esc . ']" value="' . $key_esc . '" ' . checked( $this->options[ $var ], $key_esc, false ) . ' />',
-			'<label for="', $for, '">', $value, '</label>';
+			'<label for="', $for, '">', esc_html( $value ), $screen_reader_text_html,'</label>';
 		}
 
 		echo '<a></a></div></fieldset><div class="clear"></div></div>' . "\n\n";
+	}
+
+	/**
+	 * Creates a toggle switch to define whether an indexable should be indexed or not.
+	 *
+	 * @param string $var    The variable within the option to create the radio buttons for.
+	 * @param string $label  The visual label for the radio buttons group, used as the fieldset legend.
+	 * @param string $help   Inline Help that will be printed out before the visible toggles text.
+	 *
+	 * @return void
+	 */
+	public function index_switch( $var, $label, $help = '' ) {
+		$index_switch_values = array(
+			'off' => __( 'Yes', 'wordpress-seo' ),
+			'on'  => __( 'No', 'wordpress-seo' ),
+		);
+
+		$this->toggle_switch(
+			$var,
+			$index_switch_values,
+			sprintf(
+				/* translators: %s expands to an indexable object's name, like a post type or taxonomy */
+				esc_html__( 'Show %s in search results?', 'wordpress-seo' ),
+				'<strong>' . esc_html( $label ) . '</strong>'
+			),
+			$help
+		);
+	}
+
+	/**
+	 * Creates a toggle switch to show hide certain options.
+	 *
+	 * @param string $var           The variable within the option to create the radio buttons for.
+	 * @param string $label         The visual label for the radio buttons group, used as the fieldset legend.
+	 * @param bool   $inverse_keys  Whether or not the option keys need to be inverted to support older functions.
+	 * @param string $help          Inline Help that will be printed out before the visible toggles text.
+	 *
+	 * @return void
+	 */
+	public function show_hide_switch( $var, $label, $inverse_keys = false, $help = '' ) {
+		$on_key  = ( $inverse_keys ) ? 'off' : 'on';
+		$off_key = ( $inverse_keys ) ? 'on' : 'off';
+
+		$show_hide_switch = array(
+			$on_key  => __( 'Show', 'wordpress-seo' ),
+			$off_key => __( 'Hide', 'wordpress-seo' ),
+		);
+
+		$this->toggle_switch( $var, $show_hide_switch, $label, $help );
 	}
 }

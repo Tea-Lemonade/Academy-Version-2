@@ -1,5 +1,7 @@
 <?php
 /**
+ * WPSEO plugin file.
+ *
  * @package WPSEO\Admin\ConfigurationUI
  */
 
@@ -29,7 +31,7 @@ class WPSEO_Config_Field_Upsell_Configuration_Service extends WPSEO_Config_Field
 			'</a>'
 		);
 
-		$html = '<p>' . esc_html( $intro_text ) . '</p>';
+		$html  = '<p>' . esc_html( $intro_text ) . '</p>';
 		$html .= '<p><em>' . wp_kses( $upsell_text, array(
 				'a' => array(
 					'target' => array( '_blank' ),

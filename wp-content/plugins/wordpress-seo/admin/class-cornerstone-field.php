@@ -1,5 +1,7 @@
 <?php
 /**
+ * WPSEO plugin file.
+ *
  * @package WPSEO\Admin
  */
 
@@ -16,17 +18,23 @@ class WPSEO_Cornerstone_Field {
 	 * @return string The HTML to show.
 	 */
 	public function get_html( $post ) {
+
+		$post_types = apply_filters( 'wpseo_cornerstone_post_types', WPSEO_Post_Type::get_accessible_post_types() );
+		if ( ! is_array( $post_types ) || ! isset( $post_types[ get_post_type( $post ) ] ) ) {
+			return '';
+		}
+
 		$return  = '';
 		$return .= sprintf(
 			'<input id="%1$s" class="wpseo-cornerstone-checkbox" type="checkbox" value="1" name="%1$s" %2$s/>',
-			WPSEO_Cornerstone::META_NAME,
+			WPSEO_Cornerstone::FIELD_NAME,
 			checked( $this->get_meta_value( $post->ID ), '1', false )
 		);
 
-		$return .= sprintf( '<label for="%1$s">', WPSEO_Cornerstone::META_NAME );
+		$return .= sprintf( '<label for="%1$s">', WPSEO_Cornerstone::FIELD_NAME );
 
-		/* translators: 1: link open tag; 2: link close tag. */
 		$return .= sprintf(
+			/* translators: 1: link open tag; 2: link close tag. */
 			__( 'This article is %1$scornerstone content%2$s', 'wordpress-seo' ),
 			'<a href="' . WPSEO_Shortlinker::get( 'https://yoa.st/metabox-help-cornerstone' ) . '" target="_blank">',
 			'</a>'
@@ -44,6 +52,6 @@ class WPSEO_Cornerstone_Field {
 	 * @return null|string The meta value from the database.
 	 */
 	protected function get_meta_value( $post_id ) {
-		return get_post_meta( $post_id, WPSEO_Cornerstone::META_NAME, true );
+		return WPSEO_Meta::get_value( WPSEO_Cornerstone::META_NAME, $post_id );
 	}
 }
