@@ -34,8 +34,15 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 				if ( (is_array( $response )) && ( 'success' == $response['code'] ) ) {
 					$account_data = $response['data'];
 					$count = count( $account_data );
-					$account_email = $account_data[ $count - 1 ]['email'];
-					$account_user_name = $account_data[ $count - 1 ]['first_name'] . ' ' . $account_data[ $count - 1 ]['last_name'];
+					if ( isset($account_data[ $count -1 ]['plan_type']) )
+                    {
+                        $account_email = $account_data[ $count - 2 ]['email'];
+                        $account_user_name = $account_data[ $count - 2 ]['first_name'] . ' ' . $account_data[ $count - 2 ]['last_name'];
+                    }
+                    else{
+                        $account_email = $account_data[ $count - 1 ]['email'];
+                        $account_user_name = $account_data[ $count - 1 ]['first_name'] . ' ' . $account_data[ $count - 1 ]['last_name'];
+                    }
 
 					$account_info = array(
 						'account_email' => $account_email,
@@ -261,7 +268,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 						'page_limit' => 500,
 					);
 					$users_response = $mailin->display_list_users( $data );
-					$total_subscribers = intval( $users_response['data']['total_list_records'] );
+					$total_subscribers = isset($users_response['data']['total_list_records']) ? intval( $users_response['data']['total_list_records'] ) : 0;
 				}
 				set_transient( 'sib_totalusers_' . md5( SIB_Manager::$access_key ), $total_subscribers, self::DELAYTIME );
 			}
@@ -443,6 +450,10 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 				}
 			}
 			$listid = $response['listid'];
+            if( $list_unlink != null )
+            {
+                $listid = array_diff( $listid, $list_unlink );
+            }
 
 			$mailin = new Mailin( SIB_Manager::SENDINBLUE_API_URL, SIB_Manager::$access_key );
 			$data = array(
@@ -651,16 +662,26 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 				$list_id = maybe_unserialize( $contact_info['listIDs'] );
                 $form_id = $contact_info['frmid'];
                 $current_form = SIB_Forms::getForm( $form_id );
-
+                $unlinkedLists = null;
+                if( isset( $info['unlinkedLists'] ) )
+                {
+                    $unlinkedLists = $info['unlinkedLists'];
+                    unset($info['unlinkedLists']);
+                }
                 if ( '1' == $current_form['isDopt'] )
                 {
                     SIB_API_Manager::send_comfirm_email( 'confirm', $email, $current_form['confirmID'], $info );
                 }
-
 				// temp dopt list.
 				$temp_list = get_option( SIB_Manager::TEMPLIST_OPTION_NAME );
+                if( $unlinkedLists != null ) {
+                    $unlinkedLists[] = $temp_list;
+                    self::create_subscriber( 'subscribe', $email, $list_id, $info, $unlinkedLists );
+                }
+                else {
+                    self::create_subscriber( 'subscribe', $email, $list_id, $info, array( $temp_list ) );
+                }
 
-				self::create_subscriber( 'subscribe', $email, $list_id, $info, array( $temp_list ) );
 				// remove the record.
 				$id = $contact_info['id'];
 				SIB_Model_Users::remove_record( $id );

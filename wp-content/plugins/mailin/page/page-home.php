@@ -213,8 +213,11 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 								<?php echo esc_attr( $account_user_name ); ?>&nbsp;-&nbsp;<?php echo esc_attr( $account_email ); ?><br>
 								<?php
 								$count = count( $account_data );
-								for ( $i = 0; $i < $count - 1; $i ++ ) {
-									echo esc_attr( $account_data[ $i ]['plan_type'] ) . ' - ' . esc_attr( $account_data[ $i ]['credits'] ) . ' ' . esc_attr__( 'credits', 'sib_lang' ) . '<br>';
+								for ( $i = 0; $i < $count; $i ++ ) {
+								    if ( isset($account_data[$i]['plan_type']) )
+                                    {
+                                        echo esc_attr( $account_data[ $i ]['plan_type'] ) . ' - ' . esc_attr( $account_data[ $i ]['credits'] ) . ' ' . esc_attr__( 'credits', 'sib_lang' ) . '<br>';
+                                    }
 								}
 								?>
 								<a href="<?php echo esc_url( add_query_arg( 'sib_action', 'logout' ) ); ?>"><i class="fa fa-angle-right"></i>&nbsp;<?php esc_attr_e( 'Log out', 'sib_lang' ); ?></a>
@@ -298,21 +301,6 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 										<span class="glyphicon glyphicon-dashboard"></span>
 										<?php esc_attr_e( 'Scheduled', 'sib_lang' ); ?>
 									</a>
-									<div class="list-group-item">
-										<a href="
-										<?php
-										echo esc_url(
-											add_query_arg(
-												array(
-													'page' => 'sib_page_campaigns',
-													'sort' => 'create',
-													'type' => 'classic',
-												), admin_url( 'admin.php' )
-											)
-										);
-?>
-"><i class="fa fa-angle-right"></i>&nbsp;<?php esc_attr_e( 'Create new email campaign', 'sib_lang' ); ?></a>
-									</div>
 								</div>
 							</div>
 							<div class="col-md-4">
@@ -369,21 +357,6 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 										<span class="glyphicon glyphicon-dashboard"></span>
 										<?php esc_attr_e( 'Scheduled', 'sib_lang' ); ?>
 									</a>
-									<div class="list-group-item">
-										<a href="
-										<?php
-										echo esc_url(
-											add_query_arg(
-												array(
-													'page' => 'sib_page_campaigns',
-													'sort' => 'create',
-													'type' => 'sms',
-												), admin_url( 'admin.php' )
-											)
-										);
-?>
-"><i class="fa fa-angle-right"></i>&nbsp;<?php esc_attr_e( 'Create new sms campaign', 'sib_lang' ); ?></a>
-									</div>
 								</div>
 							</div>
 							<div class="col-md-4">
@@ -440,21 +413,6 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 										<span class="glyphicon glyphicon-dashboard"></span>
 										<?php esc_attr_e( 'Scheduled', 'sib_lang' ); ?>
 									</a>
-									<div class="list-group-item">
-										<a href="
-										<?php
-										echo esc_url(
-											add_query_arg(
-												array(
-													'page' => 'sib_page_campaigns',
-													'sort' => 'create',
-													'type' => 'trigger',
-												), admin_url( 'admin.php' )
-											)
-										);
-?>
-"><i class="fa fa-angle-right"></i>&nbsp;<?php esc_attr_e( 'Create new trigger campaign', 'sib_lang' ); ?></a>
-									</div>
 								</div>
 							</div>
 						</div>

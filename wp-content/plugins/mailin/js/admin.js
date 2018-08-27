@@ -139,7 +139,7 @@ $jQ(document).ready(function(){
                         '<div class="sib-toggle sib-country-flg"><div class="sib-cflags"></div> ' +
                         '<div class="sib-icon-arrow"></div></div> '+
                         '</div>' + '<ul class="sib-country-list" style="display: none;"></ul>' +
-                        '<input type="hidden" name="sib_SMS_prefix"><input type="text" name="SMS" class="sib-sms" value="+33" ';
+                        '<input type="hidden" name="sib_SMS_prefix" value="+33"><input type="text" name="SMS" class="sib-sms" value="+33" ';
                     if(field_placeholder != '') {
                         field_html += 'placeholder="' + field_placeholder + '" ';
                     }
@@ -482,6 +482,36 @@ $jQ(document).ready(function(){
         }
     }
 
+    // generate html for multi subscription lists
+    function generate_multi_list_html() {
+        var field_label = $jQ('#sib_multi_field_label').val();
+        var field_html = '<p class="sib-multi-lists-area">\n';
+        var list_id = '';
+        var list_name = '';
+        var required = false;
+        var required_label = '';
+        var required_attr = '';
+        if ( $jQ('#sib_multi_field_required').is(":checked"))
+        {
+            required = true;
+            required_label = '*';
+            required_attr = 'required';
+        }
+        if ( field_label != '' )
+        {
+            field_html += '<label>' + field_label + required_label + '</label>\n';
+        }
+
+        field_html += '<div class="sib-multi-lists" data-require="' + required_attr + '">\n';
+        var selected_lists = $jQ('#sib_select_multi_list').find('option:selected', this);
+        selected_lists.each(function(){
+            list_id = $jQ(this).val();
+            list_name = $jQ(this).data('list');
+            field_html += '<div style="block"><input type="checkbox" class="sib-interesting-lists" value="' + list_id + '" name="listIDs[]">' + list_name + '</div>\n';
+        });
+        field_html += '</div></p>';
+        $jQ('#sib_multi_field_html').html(field_html);
+    }
     /////////////////////////////////
     /*       home settings         */
     /////////////////////////////////
@@ -686,6 +716,42 @@ $jQ(document).ready(function(){
         $jQ('#sib_select_list').chosen({width:"100%"});
     }
 
+    // For multi lists subscription
+    if ( $jQ('#sib_setting_form_body').find('#sib_sel_multi_list_area').length > 0 ) {
+        var data = {
+            frmid : $jQ('input[name=sib_form_id]').val(),
+            action : 'sib_get_lists',
+            security: ajax_sib_object.ajax_nonce
+        };
+        $jQ.post(ajax_sib_object.ajax_url, data, function(respond) {
+            var select_html = '';
+            $jQ.each(respond.lists, function(index, value) {
+                if(value['name'] == 'Temp - DOUBLE OPTIN') return true;
+                select_html += '<option value="' + value['id'] + '" data-list="' + value['name'] + '">' + value['name'] + '</option>';
+            });
+            $jQ('#sib_select_multi_list').html(select_html).trigger("chosen:updated");
+            $jQ('#sib_select_multi_list').chosen({width:"100%"});
+        });
+    }
+
+    $jQ('#sib_select_multi_list').on('change', function(){
+       if ( $jQ(this).val() != null )
+       {
+           $jQ('#sib_multi_list_field').show();
+           generate_multi_list_html();
+       }
+       else {
+           $jQ('#sib_multi_list_field').hide();
+       }
+    });
+
+    $jQ('#sib_multi_field_label').on('change', function () {
+        generate_multi_list_html();
+    });
+
+    $jQ('#sib_multi_field_required').on('change', function () {
+       generate_multi_list_html();
+    });
     // keep change of fields
     $jQ('.sib_field_changes').on('change',function() {
         change_field_attr();
@@ -901,6 +967,11 @@ $jQ(document).ready(function(){
         {
             field_html = $jQ('#sib_field_html').val();
         }
+        else if(btn_id == 'sib_multi_lists_add_form_btn')
+        {
+            field_html = $jQ('#sib_multi_field_html').val();
+            $jQ('#sib_multi_list_field').hide();
+        }
         else if(btn_id == 'sib_add_captcha_btn')
         {
             var site_key = $jQ('#sib_captcha_site').val();
@@ -932,6 +1003,11 @@ $jQ(document).ready(function(){
                 $jQ('#sib_form_terms .alert-danger').html('You should input <strong>Terms URL</strong>').show(300);
                 return false;
             }
+        }
+        else if(btn_id == 'sib_add_compliance_note')
+        {
+            var compliance_note = $jQ('#sib_gdpr_text').val();
+            field_html = '<p>' + compliance_note + '</p>';
         }
 
         var formMarkup = $jQ("#sibformmarkup");
@@ -993,6 +1069,23 @@ $jQ(document).ready(function(){
         });
 
     });
+
+    $jQ('.sib-add-compliant-note').on('click', function () {
+        var add_notes = $jQ(this).val();
+        if(add_notes == '1')
+        {
+            $jQ('.sib-gdpr-block-area').show('slow');
+            $jQ('.sib-gdpr-block-btn').show('slow');
+        }
+        else
+        {
+            $jQ('.sib-gdpr-block-area').hide('slow');
+            $jQ('.sib-gdpr-block-btn').hide('slow');
+        }
+    });
+    $jQ('#set_gdpr_default').on('click', function () {
+        $jQ('#sib_gdpr_text').val(ajax_sib_object.compliance_note);
+    })
 });
 
 // get serialized data form sync users form

@@ -36,10 +36,19 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 		 */
 		public $formID;
 
+        /**
+         * Default compliant Note
+         *
+         * @var string
+         */
+		public $defaultComplianceNote;
+
 		/**
 		 * Constructs new page object and adds entry to WordPress admin menu
 		 */
 		function __construct() {
+		    $title = get_bloginfo('name');
+		    $this->defaultComplianceNote = sprintf( esc_attr('Your e-mail address is only used to send you our newsletter and information about the activities of %s. You can always use the unsubscribe link included in the newsletter.', 'sib_lang'), $title);
 			$this->page_hook = add_submenu_page( SIB_Page_Home::PAGE_ID, __( 'Forms', 'sib_lang' ), __( 'Forms', 'sib_lang' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ) );
 			add_action( 'admin_print_scripts-' . $this->page_hook, array( $this, 'enqueue_scripts' ) );
 			add_action( 'admin_print_styles-' . $this->page_hook, array( $this, 'enqueue_styles' ) );
@@ -69,10 +78,10 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 				array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
                     'ajax_nonce' => wp_create_nonce( 'ajax_sib_admin_nonce' ),
+                    'compliance_note' => $this->defaultComplianceNote
 				)
 			);
 			wp_localize_script( 'sib-admin-js', 'sib_img_url', SIB_Manager::$plugin_url.'/img/flags/' );
-
 		}
 
 		/**
@@ -335,6 +344,78 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 												</div>
 											</div>
 										</div>
+                                        <!---- multi list per interest ----->
+                                        <div id="sib-multi-lists" class="panel panel-default row form-field"
+                                             style="padding-bottom: 20px;">
+
+                                            <div class="row small-content2"
+                                                 style="margin-top: 15px;margin-bottom: 15px;">
+                                                <b><?php esc_attr_e( 'Add Multi-List Subscription', 'sib_lang' ); ?></b>&nbsp;
+                                                <?php SIB_Page_Home::get_narration_script( __( 'Add Multi-List Subscription', 'sib_lang' ), __( 'Enable your contacts to subscribe to content based on specific interests or preferences. Create a contact list for each interest and allow them to subscribe using this field', 'sib_lang' ) ); ?>
+                                            </div>
+                                            <div id="sib_sel_multi_list_area" class="row small-content2"
+                                                 style="margin-top: 20px;">
+                                                <input type="hidden" id="sib_selected_multi_list_id" value="">
+                                                <select data-placeholder="<?php esc_attr_e( 'Please select the lists', 'sib_lang' ); ?>" id="sib_select_multi_list"
+                                                        class="col-md-12 chosen-select" name="multi_list_ids[]" multiple=""
+                                                        tabindex="-1"></select>
+                                            </div>
+                                            <div id="sib_multi_list_field" style="display: none;">
+                                                <div style="margin-top: 30px;">
+                                                    <div class="sib-attr-normal sib-attr-category row small-content2"
+                                                         style="margin-top: 10px;" id="sib_multi_field_label_area">
+                                                        <?php esc_attr_e( 'Label', 'sib_lang' ); ?>
+                                                        <small>(<?php esc_attr_e( 'Optional', 'sib_lang' ); ?>)</small>
+                                                        <input type="text" class="col-md-12 sib_field_changes" id="sib_multi_field_label">
+                                                    </div>
+                                                </div>
+                                                <div style="margin-top: 20px;">
+                                                    <div class="sib-attr-normal sib-attr-category row small-content2" style="margin-top: 5px;" id="sib_multi_field_required_area">
+                                                        <label style="font-weight: normal;"><input type="checkbox" class="sib_field_changes" id="sib_multi_field_required">&nbsp;&nbsp;<?php esc_attr_e( 'Required field ?', 'sib_lang' ); ?>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row small-content2" style="margin-top: 20px;"
+                                                     id="sib_multi_field_add_area">
+                                                    <button type="button" id="sib_multi_lists_add_form_btn"
+                                                            class="btn btn-default sib-add-to-form"><span
+                                                                class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'sib_lang' ); ?>
+                                                    </button>&nbsp;&nbsp;
+                                                    <?php SIB_Page_Home::get_narration_script( __( 'Add to form', 'sib_lang' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'sib_lang' ) ); ?>
+                                                </div>
+                                                <div class="row small-content2" style="margin-top: 20px;"
+                                                     id="sib_field_html_area">
+                                                    <span><?php esc_attr_e( 'Generated HTML', 'sib_lang' ); ?></span>
+                                                    <textarea class="col-md-12" style="height: 140px;"
+                                                              id="sib_multi_field_html"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="sib-gdpr-block" class="panel panel-default row form-field" style="padding-bottom: 20px;">
+                                            <div class="row small-content2"
+                                                 style="margin-top: 15px;margin-bottom: 15px;">
+                                                <b><?php esc_attr_e( 'Compliance Note', 'sib_lang' ); ?></b>&nbsp;
+                                                <?php SIB_Page_Home::get_narration_script( __( 'Add compliance note', 'sib_lang' ), __( 'Create GDPR-compliant subscription forms for collecting email addresses.', 'sib_lang' ) ); ?>
+                                            </div>
+                                            <div class="row small-content2" style="margin-top: 0px;">
+                                                <input type="radio" name="sib_add_compliant_note" class="sib-add-compliant-note" value="1" ><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Yes', 'sib_lang');?></label>
+                                                <input type="radio" name="sib_add_compliant_note" class="sib-add-compliant-note" value="0" checked><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'No', 'sib_lang');?></label>
+                                            </div>
+                                            <div class="row small-content2 sib-gdpr-block-area" style="display: none;">
+                                                <textarea id="sib_gdpr_text" class="col-md-12" rows="5"><?php echo trim( $this->defaultComplianceNote ); ?></textarea>
+                                                <label id="set_gdpr_default"><?php esc_attr_e('Reset to Default', 'sib_lang');?>&nbsp;<i class="fa fa-refresh"></i></label>
+                                            </div>
+                                            <div class="row small-content2 sib-gdpr-block-btn" style="display: none;">
+                                                <button type="button" id="sib_add_compliance_note"
+                                                        class="btn btn-default sib-add-to-form"><span
+                                                            class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'sib_lang' ); ?>
+                                                </button>&nbsp;&nbsp;
+                                                <?php SIB_Page_Home::get_narration_script( __( 'Add to form', 'sib_lang' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'sib_lang' ) ); ?>
+                                            </div>
+                                        </div>
+
+                                        <!---- end block ------>
 										<div id="sib_form_captcha" class="panel panel-default row form-field"
 											 style="padding-bottom: 20px;">
 											<div class="alert alert-danger" style="margin:5px;display: none;"></div>
@@ -526,9 +607,9 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 									<div id="sib_select_list_area" class="col-md-4">
 
 										<input type="hidden" id="sib_selected_list_id" value="">
-										<select data-placeholder="Please select the list" id="sib_select_list"
-												class="col-md-12 chosen-select" name="list_id[]" multiple=""
-												tabindex="-1"></select>
+                                        <select data-placeholder="Please select the list" id="sib_select_list"
+                                                class="col-md-12 chosen-select" name="list_id[]" multiple=""
+                                                tabindex="-1"></select>
 									</div>
 									<div class="col-md-5">
 										<small
@@ -718,6 +799,15 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 										<?php echo esc_html( SIB_Page_Home::get_narration_script( __( 'Invalid email address', 'sib_lang' ), __( 'Set up the message that will appear when the email address used to sign up is not valid', 'sib_lang' ) ) ); ?>
 									</div>
 								</div>
+                                <div class="row small-content">
+                                    <span class="col-md-3"><?php esc_attr_e( 'Required Field', 'sib_lang' ); ?></span>
+
+                                    <div class="col-md-8">
+                                        <input type="text" class="col-md-11" name="alert_required_message"
+                                               value="<?php echo esc_attr( $formData['requiredMsg'] ); ?>" required>&nbsp;
+                                        <?php echo esc_html( SIB_Page_Home::get_narration_script( __( 'Required Field', 'sib_lang' ), __( 'Set up the message that will appear when the required field is empty', 'sib_lang' ) ) ); ?>
+                                    </div>
+                                </div>
 								<div class="row small-content" style="margin-top: 30px;">
 									<div class="col-md-3">
 										<button class="btn btn-primary"><?php esc_attr_e( 'Save', 'sib_lang' ); ?></button>
@@ -836,6 +926,7 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 			$errorMsg = isset( $_POST['alert_error_message'] ) ? sanitize_text_field( esc_attr( $_POST['alert_error_message'] ) ) : '';
 			$existMsg = isset( $_POST['alert_exist_subscriber'] ) ? sanitize_text_field( esc_attr( $_POST['alert_exist_subscriber'] ) ) : '';
 			$invalidMsg = isset( $_POST['alert_invalid_email'] ) ? sanitize_text_field( esc_attr( $_POST['alert_invalid_email'] ) ) : '';
+			$requiredMsg = isset( $_POST['alert_required_message']) ? sanitize_text_field( esc_attr($_POST['alert_required_message'])) : '';
 			$formData = array(
 				'title' => $form_name,
 				'html' => addslashes( $form_html ),
@@ -852,6 +943,7 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 				'errorMsg' => $errorMsg,
 				'existMsg' => $existMsg,
 				'invalidMsg' => $invalidMsg,
+				'requiredMsg' => $requiredMsg,
 				'attributes' => implode( ',', $available_attrs ),
 				'gcaptcha'   => $gCaptcha,
 				'gcaptcha_secret' => $gCaptchaSecret,

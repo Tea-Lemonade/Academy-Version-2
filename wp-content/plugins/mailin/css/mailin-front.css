@@ -104,3 +104,6 @@ div.sib-sms-field {
     margin-bottom: 0 !important;
     margin-right: 0;
 }
+.sib-multi-lists.sib_error {
+    color: #A94442;
+}

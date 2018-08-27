@@ -8,6 +8,16 @@ var sibVerifyCallback = function(response){
 };
 
 jQuery(document).ready(function(){
+    jQuery('.sib_signup_form').find('input[required=required]').on("invalid", function () {
+        if(jQuery(this).val().trim() == '')
+        {
+            var alert_msg = jQuery(this).closest('form').find('input[name="sib_form_alert_notice"]').val();
+            this.setCustomValidity(alert_msg);
+        }
+        else {
+            this.setCustomValidity('');
+        }
+    });
     // run MA script identify() when submit on any forms with email field
     jQuery(document).on('submit', 'form', function(e){
         if(!jQuery(this).hasClass('sib_signup_form')) {
@@ -22,6 +32,15 @@ jQuery(document).ready(function(){
         {
             e.preventDefault();
             var form = jQuery(this).closest('form');
+            // for sms field
+            jQuery.each(form.find('.sib-sms'), function () {
+                var sms = jQuery(this).val();
+                var sms_prefix = jQuery(this).closest('.sib-sms-field').find('input[name="sib_SMS_prefix"]').val();
+                if ( sms == sms_prefix && !jQuery(this).prop('required')) {
+                    jQuery(this).val('');
+                }
+            });
+
             /**
              * For safari
              * Not support required attribute
@@ -29,13 +48,16 @@ jQuery(document).ready(function(){
 
             var required_fileds = [];
             var err_index = 0;
-            jQuery.each(form.find('input[required="required"]'), function(){
-                if(jQuery(this).val() == '')
+
+            var multi_lists = form.find(jQuery('.sib-multi-lists'));
+            if( multi_lists != undefined && multi_lists.data('require') == 'required' )
+            {
+                if ( multi_lists.find('input:checked').length == 0 )
                 {
-                    required_fileds[err_index] = jQuery(this).attr('name');
                     err_index++;
+                    multi_lists.addClass('sib_error');
                 }
-            });
+            }
             if(err_index > 0)
             {
                 form.find('.sib_msg_disp').html('<p class="sib-alert-message sib-alert-message-warning ">' + sibErrMsg.requiredField + '</p>').show();
@@ -105,84 +127,102 @@ jQuery(document).ready(function(){
             form.find('.sib_loader').show();
             jQuery('.sib_msg_disp').hide();
             var postData = form.serializeArray();
-            if( captchaRes != '')
+            if( captchaRes != '' )
             {
                 postData.push({"name": "g-recaptcha-response", "value": captchaRes});
+            }
+
+            if( jQuery('.sib-multi-lists').length )
+            {
+                var interesting_lists = [];
+                jQuery('.sib-interesting-lists').each(function () {
+                    postData.push({"name":"interestingLists[]", "value": jQuery(this).val()})
+                });
             }
             var formURL = form.attr("action");
             form.addClass('sib_processing');
 
             postData.push({ "name": "security", "value": ajax_sib_front_object.ajax_nonce });
-            jQuery.ajax(
-                {
-                    url: formURL,
-                    type: "POST",
-                    dataType: "json",
-                    data: postData,
-                    success: function (data, textStatus, jqXHR) {
-                        jQuery('.sib_loader').hide();
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                        } else if (data.status === 'success' || data.status === 'update') {
-                            var cdata = '<p class="sib-alert-message sib-alert-message-success ">' + data.msg.successMsg + '</p>';
-                            form.find('.sib_msg_disp').html(cdata).show();
-                        } else if (data.status === 'failure') {
-                            var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg.errorMsg + '</p>';
-                            form.find('.sib_msg_disp').html(cdata).show();
-                        } else if (data.status === 'already_exist') {
-                            var cdata = '<p class="sib-alert-message sib-alert-message-warning ">' + data.msg.existMsg + '</p>';
-                            form.find('.sib_msg_disp').html(cdata).show();
-                        } else if (data.status === 'invalid') {
-                            var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg.invalidMsg + '</p>';
-                            form.find('.sib_msg_disp').html(cdata).show();
-                        } else if (data.status === 'gcaptchaEmpty') {
-                            var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg + '</p>';
-                            form.find('.sib_msg_disp').html(cdata).show();
-                        } else if (data.status === 'gcaptchaFail') {
-                            var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg + '</p>';
-                            form.find('.sib_msg_disp').html(cdata).show();
-                        }
-                        form[0].reset();
-                        var previous_code = form.find('.sib-cflags').data('dial-code');
+            jQuery.ajax({
+                url: formURL,
+                type: "POST",
+                dataType: "json",
+                data: postData,
+                success: function (data, textStatus, jqXHR) {
+                    jQuery('.sib_loader').hide();
+                    if( jQuery('.sib-multi-lists').length )
+                    {
+                        jQuery('.sib-multi-lists').removeClass('sib_error');
+                    }
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else if (data.status === 'success' || data.status === 'update') {
+                        var cdata = '<p class="sib-alert-message sib-alert-message-success ">' + data.msg.successMsg + '</p>';
+                        form.find('.sib_msg_disp').html(cdata).show();
+                    } else if (data.status === 'failure') {
+                        var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg.errorMsg + '</p>';
+                        form.find('.sib_msg_disp').html(cdata).show();
+                    } else if (data.status === 'already_exist') {
+                        var cdata = '<p class="sib-alert-message sib-alert-message-warning ">' + data.msg.existMsg + '</p>';
+                        form.find('.sib_msg_disp').html(cdata).show();
+                    } else if (data.status === 'invalid') {
+                        var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg.invalidMsg + '</p>';
+                        form.find('.sib_msg_disp').html(cdata).show();
+                    } else if (data.status === 'gcaptchaEmpty') {
+                        var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg + '</p>';
+                        form.find('.sib_msg_disp').html(cdata).show();
+                    } else if (data.status === 'gcaptchaFail') {
+                        var cdata = '<p class="sib-alert-message sib-alert-message-error ">' + data.msg + '</p>';
+                        form.find('.sib_msg_disp').html(cdata).show();
+                    }
+                    form[0].reset();
+                    var previous_code = form.find('.sib-cflags').data('dial-code');
+                    if ( previous_code )
+                    {
                         form.find('.sib-sms').val('+' + previous_code);
-                        // run MA script identify() when subscribe on SIB forms
-                        if (typeof sendinblue != 'undefined') {
-                            var email = form.find('input[name=email]').val();
-                            var postData = form.serializeObject();
-                            if (data.status === 'success' || data.status === 'update' || data.status === 'already_exist') {
-                                sendinblue.identify(email, postData);
-                            }
-                        }
-                        jQuery(".sib-alert-message").delay(2000).hide('slow');
-                        form.removeClass('sib_processing');
-                        if (typeof grecaptcha != 'undefined')
-                        {
-                            grecaptcha.reset(gCaptchaSibWidget);
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        form.find('.sib_msg_disp').html(jqXHR).show();
-                        if (typeof grecaptcha != 'undefined')
-                        {
-                            grecaptcha.reset(gCaptchaSibWidget);
+                        form.find('input[name="sib_SMS_prefix"]').val('+' + previous_code);
+                    }
+
+                    // run MA script identify() when subscribe on SIB forms
+                    if (typeof sendinblue != 'undefined') {
+                        var email = form.find('input[name=email]').val();
+                        var postData = form.serializeObject();
+                        if (data.status === 'success' || data.status === 'update' || data.status === 'already_exist') {
+                            sendinblue.identify(email, postData);
                         }
                     }
-                });
+                    jQuery(".sib-alert-message").delay(2000).hide('slow');
+                    form.removeClass('sib_processing');
+                    if (typeof grecaptcha != 'undefined')
+                    {
+                        grecaptcha.reset(gCaptchaSibWidget);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    form.find('.sib_msg_disp').html(jqXHR).show();
+                    if (typeof grecaptcha != 'undefined')
+                    {
+                        grecaptcha.reset(gCaptchaSibWidget);
+                    }
+                }
+            });
         }
     });
     jQuery('.sib-country-block').on('click', function () {
        jQuery('.sib-country-list').toggle();
     });
-    jQuery('.sib-country-list').ready( function () {
-        var country_list_box = jQuery(this);
-        var data = {
-            action : 'sib_get_country_prefix',
-            security: ajax_sib_front_object.ajax_nonce,
-        };
-        jQuery.post( ajax_sib_front_object.ajax_url, data, function (respond) {
-            jQuery('.sib-country-list').html(respond);
+    if (jQuery('.sib-country-list').length > 0)
+    {
+        jQuery('.sib-country-list').ready( function () {
+            var data = {
+                action : 'sib_get_country_prefix',
+                security: ajax_sib_front_object.ajax_nonce,
+            };
+            jQuery.post( ajax_sib_front_object.ajax_url, data, function (respond) {
+                jQuery('.sib-country-list').html(respond);
+            });
         });
-    });
+    }
 
     jQuery('body').on('click', function(e){
         if ( jQuery('.sib-sms-field .sib-country-list').length > 0 && !jQuery('.sib-sms-field .sib-country-list').is(e.target) && jQuery('.sib-sms-field .sib-country-list').has(e.target).length === 0 && jQuery('.sib-sms-field .sib-country-block').has(e.target).length === 0 ) {
@@ -194,6 +234,7 @@ jQuery(document).ready(function(){
         var country_code = jQuery(this).data('country-code').toLowerCase();
         var dial_code = jQuery(this).data('dial-code');
         jQuery(this).closest('.sib-sms-field').find('.sib-sms').val('+' + dial_code );
+        jQuery(this).closest('.sib-sms-field').find('input[name="sib_SMS_prefix"]').val('+' + dial_code );
         jQuery(this).closest('.sib-sms-field').find('.sib-cflags').css('background-image', 'url(' + ajax_sib_front_object.flag_url + country_code + '.png)');
         jQuery(this).closest('.sib-sms-field').find('.sib-cflags').data('dial-code', dial_code);
         jQuery(this).closest('.sib-country-list').hide();
@@ -201,6 +242,7 @@ jQuery(document).ready(function(){
     jQuery(".sib-sms").on('keypress', function (event){
         validateInteger(event, 'sms');
     });
+
     // allow to input 0-9 and - only for date field
     jQuery(".sib-date").on('keypress', function(event) {
         validateInteger(event, 'date');

@@ -1034,6 +1034,38 @@ msgstr ""
 msgid "Final confirmation"
 msgstr "Confirmation finale"
 
+#: ../page/page-form.php:343
+msgid "Add Multi-List Subscription"
+msgstr "Ajouter une inscription multi-liste"
+
+#: ../page/page-form.php:344
+msgid "Enable your contacts to subscribe to content based on specific interests or preferences. Create a contact list for each interest and allow them to subscribe using this field"
+msgstr "Donner la possibilité à vos contacts de s’abonner au contenu selon leurs préférences et leurs centres d’intérêt. Pour se faire, créer une liste pour chaque centre d’intérêt et inviter votre contact à s’y abonner en utilisant ce champ"
+
+#: ../page/page-form.php:350
+msgid "Please select the lists"
+msgstr "Veuillez sélectionner une ou plusieurs listes"
+
+#: ../page/page-form.php:390
+msgid "Compliance Note"
+msgstr "Note de conformité"
+
+#: ../page/page-form.php:391
+msgid "Add compliance note"
+msgstr "Ajouter une note de conformité"
+
+#: ../page/page-form.php:391
+msgid "Create GDPR-compliant subscription forms for collecting email addresses."
+msgstr "Créer un formulaire d’inscription pour collecter les adresses emails conformément à la loi RGPD"
+
+#: ../page/page-form.php:406
+msgid "Reset to Default"
+msgstr "Charger le formulaire par défaut"
+
+#: ../page/page-form.php:50
+msgid "Your e-mail address is only used to send you our newsletter and information about the activities of %s. You can always use the unsubscribe link included in the newsletter."
+msgstr "Votre adresse email est utilisée uniquement pour vous envoyer notre newsletter ainsi que les activités concernant %s. Vous pouvez toujours vous désinscrire en cliquant sur le lien de désinscription se trouvant dans la newsletter."
+
 #~ msgid "Settings"
 #~ msgstr "Paramètres"
 

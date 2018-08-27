@@ -249,3 +249,15 @@ pre.script {
 #sib_final_confirm_template_id_area {
     padding-left: 0px;
 }
+
+.sib-gdpr-block-area {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+.sib-gdpr-block-area textarea {
+    margin-bottom: 10px;
+}
+.sib-gdpr-block-area label {
+    font-weight: 100;
+    margin-left: 5px;
+}

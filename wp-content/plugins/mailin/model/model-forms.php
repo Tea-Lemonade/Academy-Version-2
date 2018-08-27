@@ -40,6 +40,7 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
                 `errorMsg` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
                 `existMsg` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
                 `invalidMsg` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+                `requiredMsg` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
                 `attributes` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
                 `date` DATE NOT NULL,
                 `isDefault` int(1) NOT NULL DEFAULT 0,
@@ -53,7 +54,11 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			dbDelta( $creation_query );
 			// create default form.
-			self::createDefaultForm();
+            $rows = $wpdb->get_results('SELECT * FROM '. $wpdb->prefix . self::TABLE_NAME );
+            if (count( $rows ) == 0 )
+            {
+                self::createDefaultForm();
+            }
 		}
 
 		/**
@@ -66,23 +71,50 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 		}
 
 		/**
-		 * Add columns for old version
+		 * Add columns for old versions
 		 */
 		public static function alterTable() {
 			global $wpdb;
 			// add columns -gCaptcha, gCaptcha_secret.
 			$table_name = $wpdb->prefix . self::TABLE_NAME;
+
+			// check if gCaptcha fields exist
 			$gCaptcha = 'gCaptcha';
 			$result = $wpdb->query( $wpdb->prepare( "SHOW COLUMNS FROM `$table_name` LIKE %s ", $gCaptcha ) ); // db call ok; no-cache ok.
 
 			if ( empty( $result ) ) {
-				$alter_query = 'ALTER TABLE ' . $wpdb->prefix . self::TABLE_NAME . '
+				$alter_query = 'ALTER TABLE ' . $table_name . '
                             ADD COLUMN gCaptcha int(1) not NULL DEFAULT 0,
                              ADD COLUMN gCaptcha_secret varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
                              ADD COLUMN gCaptcha_site varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-				$ret = $wpdb->query( $alter_query ); // db call ok; no-cache ok.
+				$ret = $wpdb->query( $alter_query );
 			}
 
+            // add columns -termAccept, termsURL : version 2.9.0
+            $check_query = 'SHOW COLUMNS FROM `' . $table_name . "` LIKE 'termAccept';";
+            $result = $wpdb->query( $check_query );
+            if ( empty( $result ) ) {
+                $alter_query = 'ALTER TABLE ' . $table_name . '
+                            ADD COLUMN termAccept int(1) not NULL DEFAULT 1,
+                             ADD COLUMN termsURL varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+                $ret = $wpdb->query( $alter_query );
+            }
+            // add columns - confirmID : version 2.9.0
+            $check_query = 'SHOW COLUMNS FROM `' . $table_name . "` LIKE 'confirmID';";
+            $result = $wpdb->query( $check_query );
+            if ( empty( $result ) ) {
+                $alter_query = 'ALTER TABLE ' . $table_name . '
+                            ADD COLUMN confirmID int(20) not NULL DEFAULT -1';
+                $ret = $wpdb->query( $alter_query );
+            }
+            // add columns - requiredMsg : version 2.9.3
+            $check_query = 'SHOW COLUMNS FROM `' . $table_name . "` LIKE 'requiredMsg';";
+            $result = $wpdb->query( $check_query );
+            if ( empty( $result ) ) {
+                $alter_query = 'ALTER TABLE ' . $table_name . '
+                            ADD COLUMN requiredMsg varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+                $ret = $wpdb->query( $alter_query );
+            }
 		}
 
 		/**
@@ -177,10 +209,10 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 
 			global $wpdb;
 			$query = 'INSERT INTO ' . $wpdb->prefix . self::TABLE_NAME . ' ';
-			$query .= '(title,html,css,dependTheme,listID,templateID,confirmID,isOpt,isDopt,redirectInEmail,redirectInForm,successMsg,errorMsg,existMsg,invalidMsg,attributes,date,gCaptcha,gCaptcha_secret,gCaptcha_site,termAccept,termsURL) ';
+			$query .= '(title,html,css,dependTheme,listID,templateID,confirmID,isOpt,isDopt,redirectInEmail,redirectInForm,successMsg,errorMsg,existMsg,invalidMsg,requiredMsg,attributes,date,gCaptcha,gCaptcha_secret,gCaptcha_site,termAccept,termsURL) ';
 			$query .= "VALUES ('{$formData['title']}','{$formData['html']}','{$formData['css']}','{$formData['dependTheme']}','{$formData['listID']}',
         '{$formData['templateID']}','{$formData['confirmID']}','{$formData['isOpt']}','{$formData['isDopt']}','{$formData['redirectInEmail']}','{$formData['redirectInForm']}',
-        '{$formData['successMsg']}','{$formData['errorMsg']}','{$formData['existMsg']}','{$formData['invalidMsg']}','{$formData['attributes']}','{$current_date}','{$formData['gcaptcha']}','{$formData['gcaptcha_secret']}' ,'{$formData['gcaptcha_site']}','{$formData['termAccept']}','{$formData['termsURL']}')";
+        '{$formData['successMsg']}','{$formData['errorMsg']}','{$formData['existMsg']}','{$formData['invalidMsg']}','{$formData['requiredMsg']}','{$formData['attributes']}','{$current_date}','{$formData['gcaptcha']}','{$formData['gcaptcha_secret']}' ,'{$formData['gcaptcha_site']}','{$formData['termAccept']}','{$formData['termsURL']}')";
 			$wpdb->query( $query ); // db call ok; no-cache ok.
 			$index = $wpdb->get_var( 'SELECT LAST_INSERT_ID();' ); // db call ok; no-cache ok.
 			return $index;
@@ -203,7 +235,7 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 			$query .= "set title='{$formData['title']}',html='{$formData['html']}',css='{$formData['css']}',dependTheme='{$formData['dependTheme']}',listID='{$formData['listID']}',
         isOpt='{$formData['isOpt']}',isDopt='{$formData['isDopt']}',templateID='{$formData['templateID']}',confirmID='{$formData['confirmID']}',
         redirectInEmail='{$formData['redirectInEmail']}',redirectInForm='{$formData['redirectInForm']}',
-        successMsg='{$formData['successMsg']}',errorMsg='{$formData['errorMsg']}',existMsg='{$formData['existMsg']}',invalidMsg='{$formData['invalidMsg']}',date='{$current_date}',attributes='{$formData['attributes']}',gCaptcha='{$formData['gcaptcha']}',gCaptcha_secret='{$formData['gcaptcha_secret']}' ,gCaptcha_site='{$formData['gcaptcha_site']}' ,termAccept='{$formData['termAccept']}',termsURL='{$formData['termsURL']}'";
+        successMsg='{$formData['successMsg']}',errorMsg='{$formData['errorMsg']}',existMsg='{$formData['existMsg']}',invalidMsg='{$formData['invalidMsg']}',requiredMsg='{$formData['requiredMsg']}',date='{$current_date}',attributes='{$formData['attributes']}',gCaptcha='{$formData['gcaptcha']}',gCaptcha_secret='{$formData['gcaptcha_secret']}' ,gCaptcha_site='{$formData['gcaptcha_site']}' ,termAccept='{$formData['termAccept']}',termsURL='{$formData['termsURL']}'";
 			$query .= 'where id=' . $formID . ';';
 			$wpdb->query( $query ); // db call ok; no-cache ok.
 
@@ -243,8 +275,8 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 			$attributes = 'email,NAME';
 			global $wpdb;
 			$query = 'INSERT INTO ' . $wpdb->prefix . self::TABLE_NAME . ' ';
-			$query .= '(title,html,css,listID,dependTheme,successMsg,errorMsg,existMsg,invalidMsg,attributes,date,isDefault) ';
-			$query .= "VALUES ('Default Form','{$html}','{$css}','{$list}','1','{$formData['successMsg']}','{$formData['errorMsg']}','{$formData['existMsg']}','{$formData['invalidMsg']}','{$attributes}','{$current_date}','1')";
+			$query .= '(title,html,css,listID,dependTheme,successMsg,errorMsg,existMsg,invalidMsg,requiredMsg,attributes,date,isDefault) ';
+			$query .= "VALUES ('Default Form','{$html}','{$css}','{$list}','1','{$formData['successMsg']}','{$formData['errorMsg']}','{$formData['existMsg']}','{$formData['invalidMsg']}','{$formData['requiredMsg']}','{$attributes}','{$current_date}','1')";
 			$wpdb->query( $query ); // db call ok; no-cache ok.
 		}
 
@@ -311,6 +343,7 @@ EOD;
 				'errorMsg' => esc_attr( __( 'Something wrong occured', 'sib_lang' ) ),
 				'existMsg' => esc_attr( __( 'You have already registered', 'sib_lang' ) ),
 				'invalidMsg' => esc_attr( __( 'Your email address is invalid', 'sib_lang' ) ),
+                'requiredMsg' => esc_attr(__('Please fill out this field', 'sib_lang'))
 			);
 			return $result;
 		}
@@ -400,38 +433,6 @@ EOD;
 				$wpdb->query( $query ); // db call ok; no-cache ok.
 			}
 		}
-
-		/**
-		 * Add new column for terms and condition
-		 */
-		public static function addTermsColumn() {
-			global $wpdb;
-			// add columns -termAccept, termsURL.
-			$check_query = 'SHOW COLUMNS FROM `' . $wpdb->prefix . self::TABLE_NAME . "` LIKE 'termAccept';";
-			$result = $wpdb->query( $check_query ); // db call ok; no-cache ok.
-			if ( empty( $result ) ) {
-				$alter_query = 'ALTER TABLE ' . $wpdb->prefix . self::TABLE_NAME . '
-                            ADD COLUMN termAccept int(1) not NULL DEFAULT 1,
-                             ADD COLUMN termsURL varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-				$ret = $wpdb->query( $alter_query ); // db call ok; no-cache ok.
-			}
-
-		}
-
-		/**
-         * Add new column for final confirm template id
-         */
-		public static function addConfirmIDColumn() {
-            global $wpdb;
-            // add columns - confirmID.
-            $check_query = 'SHOW COLUMNS FROM `' . $wpdb->prefix . self::TABLE_NAME . "` LIKE 'confirmID';";
-            $result = $wpdb->query( $check_query ); // db call ok; no-cache ok.
-            if ( empty( $result ) ) {
-                $alter_query = 'ALTER TABLE ' . $wpdb->prefix . self::TABLE_NAME . '
-                            ADD COLUMN confirmID int(20) not NULL DEFAULT -1';
-                $ret = $wpdb->query( $alter_query ); // db call ok; no-cache ok.
-            }
-        }
 
 	}
 }
